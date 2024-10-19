@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { PaymentMethod } from "../enums/paymentMethod";
+import { Role } from "src/modules/roles/persistance/entities/role.entity";
 
 @Entity()
 export class User {
@@ -22,10 +23,7 @@ export class User {
     @Column({ nullable: false })
     password: string;
 
-    @Column({ nullable: false, default: 1 })
-    role_id: number;
-
-    @Column({
+    @Column({         
         type: 'enum',
         enum: PaymentMethod,  
         default: PaymentMethod.PAYPAL  
@@ -35,6 +33,12 @@ export class User {
     @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date;
 
+    /** manejo de relaciones */
+    @ManyToOne(() => Role, (role) => role.id, {
+        // cascade: true,
+        eager: true, // para que traiga las raza al hacer un findOne
+      })
+    role: Role;
 
 
 }
