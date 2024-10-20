@@ -27,6 +27,8 @@ export class UsersService {
     let role: Role;
     if (createUserDto.role) {
       role = await this.roleService.findOneByName(createUserDto.role);
+      //TODO: implementar logica para consumir el servicio de la pasarela de pagos,validando que tenga cuenta vigente ahi.
+
     } else {
       role = await this.roleService.findOne(2);
     }
