@@ -1,5 +1,6 @@
 import { Transform } from "class-transformer";
-import { IsEmail, IsString, MinLength } from "class-validator";
+import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
+import { PaymentMethod } from '../../users/persistance/enums/paymentMethod';
 export class RegisterDto {
 
     @Transform(({ value }) => value.trim())
@@ -12,16 +13,20 @@ export class RegisterDto {
 
     @Transform(({ value }) => value.trim())
     @IsString()
-    address: string;
+    cui: string;
     
     @Transform(({ value }) => value.trim())
     @IsString()
     @MinLength(7)
-    nit: string;
+    @IsOptional()
+    nit?: string;
 
     @Transform(({ value }) => value.trim())
     @IsString()
     password: string;
+
+    @IsString()
+    payment_method: PaymentMethod;
 
 
 }

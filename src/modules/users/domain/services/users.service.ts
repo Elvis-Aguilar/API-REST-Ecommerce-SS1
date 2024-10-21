@@ -41,11 +41,12 @@ export class UsersService {
 
     const user = this.userRepository.create({
       name: createUserDto.name,
-      address: createUserDto.name,
+      cui: createUserDto.cui,
       email: createUserDto.email,
-      nit: createUserDto.email,
+      nit: createUserDto.nit,
       password: hashedPassword,
       role: role,
+      payment_method: createUserDto.payment_method
     });
 
     return await this.userRepository.save(user);

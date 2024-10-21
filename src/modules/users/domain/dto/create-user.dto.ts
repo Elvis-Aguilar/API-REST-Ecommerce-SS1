@@ -1,4 +1,5 @@
 import { IsEmail, IsOptional, IsString, MinLength } from "class-validator";
+import { PaymentMethod } from '../../persistance/enums/paymentMethod';
 
 export class CreateUserDto {
 
@@ -11,11 +12,12 @@ export class CreateUserDto {
     email: string;
 
     @IsString()
-    address: string;
+    cui: string;
     
     @IsString()
     @MinLength(7)
-    nit: string;
+    @IsOptional()
+    nit?: string;
 
     @IsString()
     password: string;
@@ -23,5 +25,8 @@ export class CreateUserDto {
     @IsString()
     @IsOptional()
     role?: string;
+
+    @IsString()
+    payment_method: PaymentMethod;
 
 }

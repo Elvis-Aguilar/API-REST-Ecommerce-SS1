@@ -15,9 +15,9 @@ export class User {
     email: string;
 
     @Column({ nullable: false })
-    address: string;
+    cui: string;
 
-    @Column({ nullable: false, length: 15 })
+    @Column({ nullable: true, length: 15 })
     nit: string;
 
     @Column({ nullable: false })
