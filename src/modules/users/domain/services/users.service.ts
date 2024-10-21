@@ -1,34 +1,38 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../persistance/entities/user.entity';
 import { Repository } from 'typeorm';
 import { RolesService } from 'src/modules/roles/domain/services/roles.service';
-import * as bcryptjs from "bcryptjs";
+import * as bcryptjs from 'bcryptjs';
 import { Role } from 'src/modules/roles/persistance/entities/role.entity';
-
 
 @Injectable()
 export class UsersService {
-
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly roleService: RolesService
-  ) { }
+    private readonly roleService: RolesService,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
+    const userExist = await this.findOneByEmail(createUserDto.email);
 
-    if (!this.findOneByEmail(createUserDto.email)) {
-      throw new BadRequestException(`Usuario con email: ${createUserDto.email} Ya esta asociado a una cuenta`);
+    if (userExist) {
+      throw new ConflictException(
+        `Usuario con email: ${createUserDto.email} Ya esta asociado a una cuenta`,
+      );
     }
 
     let role: Role;
     if (createUserDto.role) {
       role = await this.roleService.findOneByName(createUserDto.role);
       //TODO: implementar logica para consumir el servicio de la pasarela de pagos,validando que tenga cuenta vigente ahi.
-
     } else {
       role = await this.roleService.findOne(2);
     }
@@ -41,27 +45,38 @@ export class UsersService {
       email: createUserDto.email,
       nit: createUserDto.email,
       password: hashedPassword,
-      role: role
+      role: role,
     });
 
     return await this.userRepository.save(user);
-
   }
 
   async findOneByEmail(email: string) {
     return await this.userRepository.findOneBy({ email });
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return await this.userRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    return await this.userRepository.findOneBy({ id });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const userExist = await this.findOne(id);
+
+    if (!userExist) {
+      throw new NotFoundException(`Usuario con email: ${updateUserDto.email}`);
+    }
+
+    const role = await this.roleService.findOneByName(updateUserDto.role);
+
+    return await this.userRepository.save({
+      ...userExist,
+      ...updateUserDto,
+      role,
+    });
   }
 
   remove(id: number) {

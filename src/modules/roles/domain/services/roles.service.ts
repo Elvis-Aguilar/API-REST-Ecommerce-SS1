@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { Role } from '../../persistance/entities/role.entity';
@@ -10,19 +10,26 @@ export class RolesService {
 
   constructor(
     @InjectRepository(Role)
-    private readonly roleRepostitory: Repository<Role>,
+    private readonly roleRepository: Repository<Role>,
   ){}
 
-  create(createRoleDto: CreateRoleDto) {
-    return 'This action adds a new role';
+  async create(createRoleDto: CreateRoleDto) {
+
+    if(await this.roleRepository.findOneBy({name: createRoleDto.name})){
+      throw new ConflictException('Role already exists');
+    }
+
+    const roleCreated = this.roleRepository.create(createRoleDto);
+
+    return await  this.roleRepository.save(roleCreated);
   }
 
-  findAll() {
-    return `This action returns all roles`;
+  async findAll() {
+    return await this.roleRepository.find();
   }
 
   async findOne(id: number) {
-    const role =  await this.roleRepostitory.findOneBy({id});
+    const role =  await this.roleRepository.findOneBy({id});
     if (!role) {
       throw new BadRequestException(`Rol no encontrado : ${id}`);
     }
@@ -30,7 +37,7 @@ export class RolesService {
   }
 
   async findOneByName(name:string){
-    const role =  await this.roleRepostitory.findOneBy({name});
+    const role =  await this.roleRepository.findOneBy({name});
     if (!role) {
       throw new BadRequestException(`Rol no encontrado : ${name}`);
     }
