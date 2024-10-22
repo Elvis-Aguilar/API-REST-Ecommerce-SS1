@@ -1,19 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateSupplierDto } from '../dto/create-supplier.dto';
 import { UpdateSupplierDto } from '../dto/update-supplier.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Supplier } from '../../entities/supplier.entity';
 
 @Injectable()
 export class SuppliersService {
-  create(createSupplierDto: CreateSupplierDto) {
-    return 'This action adds a new supplier';
+
+  constructor(
+    @InjectRepository(Supplier)
+    private readonly supplierRepository: Repository<Supplier>
+  ) {
   }
 
-  findAll() {
-    return `This action returns all suppliers`;
+
+  async create(createSupplierDto: CreateSupplierDto) {
+    const supplier = this.supplierRepository.create(createSupplierDto);
+    return await this.supplierRepository.save(supplier);
+  }
+
+  async findAll() {
+    return await this.supplierRepository.find()
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} supplier`;
+    const supplier = this.supplierRepository.findOneBy({id});
+    if (!supplier) {
+      throw new BadRequestException(`Supplier no encontrada : ${id}`);
+    }
+    return supplier;
   }
 
   update(id: number, updateSupplierDto: UpdateSupplierDto) {
