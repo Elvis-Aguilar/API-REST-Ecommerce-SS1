@@ -22,7 +22,7 @@ export class AuthService {
     return {
       token,
       email: user.email,
-      role: user.role,
+      role: user.role.id,
       id: user.id,
       name:user.name
     };
