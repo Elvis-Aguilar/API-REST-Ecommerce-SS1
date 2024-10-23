@@ -9,7 +9,7 @@ export class CreateProductDto {
   @IsString()
   description: string;
 
-  @IsDecimal()
+  @IsNumber()
   @IsPositive()
   price: number;
 

@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
       });
       request.user = payload;
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('token invalido');
     }
 
     return true;
