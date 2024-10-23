@@ -6,12 +6,18 @@ import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { SuppliersModule } from './modules/suppliers/suppliers.module';
+import { ProductsModule } from './modules/products/products.module';
 
 @Module({
   imports: [
     RolesModule,
     UsersModule,
     AuthModule,
+    CategoriesModule,
+    SuppliersModule,
+    ProductsModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

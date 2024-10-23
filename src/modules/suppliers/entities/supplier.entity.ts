@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Product } from '../../products/persistance/entities/product.entity';
 
 @Entity()
 export class Supplier {
@@ -14,4 +15,10 @@ export class Supplier {
 
   @Column({ nullable: false })
   address: string;
+
+  /**
+   * manejo de relaciones
+   */
+  @OneToMany(() => Product, (product) => product.supplier)
+  product: Product[];
 }
