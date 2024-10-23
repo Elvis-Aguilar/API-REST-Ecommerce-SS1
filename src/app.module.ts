@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { ProductsModule } from './modules/products/products.module';
+import { CloudinaryModule } from './config/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ProductsModule } from './modules/products/products.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
