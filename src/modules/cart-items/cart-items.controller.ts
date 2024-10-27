@@ -7,10 +7,6 @@ import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 export class CartItemsController {
   constructor(private readonly cartItemsService: CartItemsService) {}
 
-  @Post()
-  create(@Body() createCartItemDto: CreateCartItemDto) {
-    return this.cartItemsService.create(createCartItemDto);
-  }
 
   @Get()
   findAll() {

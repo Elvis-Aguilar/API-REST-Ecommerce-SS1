@@ -58,6 +58,24 @@ export class ProductsService {
     return await this.productRepository.save(product);
   }
 
+  async discountStock(id: number, discount: number): Promise<boolean> {
+    const product = await this.productRepository.findOne({ where: { id } });
+
+    if (!product) {
+      throw new NotFoundException(`Producto con ID ${id} no encontrado`);
+    }
+
+    if (product.stock < discount) {
+      return false;
+    }
+
+    product.stock -= discount;
+
+    await this.productRepository.save(product);
+
+    return true;
+  }
+
   async remove(id: number): Promise<void> {
 
     const product = await this.productRepository.findOneBy({ id });

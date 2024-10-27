@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PaymentMethod } from '../../users/persistance/enums/paymentMethod';
 import { StatusCart } from '../enums/Status';
 import { User } from '../../users/persistance/entities/user.entity';
+import { CartItem } from '../../cart-items/entities/cart-item.entity';
 
 @Entity()
 export class Cart {
@@ -41,5 +42,8 @@ export class Cart {
     eager: true,
   })
   user: User;
+
+  @OneToMany(() => CartItem, (cart) => cart.cart)
+  cartItems: CartItem[];
 
 }

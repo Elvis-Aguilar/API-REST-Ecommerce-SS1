@@ -8,9 +8,10 @@ import { SuppliersModule } from '../suppliers/suppliers.module';
 import { Cart } from './entities/cart.entity';
 import { ProductsModule } from '../products/products.module';
 import { ProductsService } from '../products/domain/service/products.service';
+import { CartItemsModule } from '../cart-items/cart-items.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Cart]), ProductsModule],
+  imports: [TypeOrmModule.forFeature([Cart]), CartItemsModule],
   controllers: [CartsController],
   providers: [CartsService],
 })

@@ -1,5 +1,4 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '../../users/persistance/entities/user.entity';
 import { Cart } from '../../carts/entities/cart.entity';
 import { Product } from '../../products/persistance/entities/product.entity';
 
@@ -12,7 +11,12 @@ export class CartItem {
   @Column({nullable:false})
   quantity: number;
 
-  @Column({nullable:false})
+  @Column({
+    type: 'decimal',
+    precision: 12,
+    scale: 2,
+    nullable: false
+  })
   sub_total: number;
 
   /** manejo de relaciones */

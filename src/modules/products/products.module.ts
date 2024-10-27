@@ -11,5 +11,6 @@ import { PaymentMethod } from '../users/persistance/enums/paymentMethod';
   imports: [TypeOrmModule.forFeature([Product]), CategoriesModule, SuppliersModule],
   controllers: [ProductsController],
   providers: [ProductsService],
+  exports: [ProductsService]
 })
 export class ProductsModule {}

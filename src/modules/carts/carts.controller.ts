@@ -18,8 +18,8 @@ export class CartsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartsService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.cartsService.findOne(id);
   }
 
   @Patch(':id')
