@@ -11,6 +11,8 @@ import { Repository } from 'typeorm';
 import { RolesService } from 'src/modules/roles/domain/services/roles.service';
 import * as bcryptjs from 'bcryptjs';
 import { Role } from 'src/modules/roles/persistance/entities/role.entity';
+import axios from 'axios';
+import { ServiceService } from '../../../../webServices/service/service.service';
 
 @Injectable()
 export class UsersService {
@@ -18,6 +20,7 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly roleService: RolesService,
+    private  readonly service: ServiceService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -32,8 +35,8 @@ export class UsersService {
     let role: Role;
     if (createUserDto.role) {
       role = await this.roleService.findOneByName(createUserDto.role);
-      //TODO: implementar logica para consumir el servicio de la pasarela de pagos,validando que tenga cuenta vigente ahi.
     } else {
+      await this.service.validUserExisParaseral(createUserDto.payment_method, createUserDto.email)
       role = await this.roleService.findOne(2);
     }
 

@@ -1,6 +1,8 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PaymentMethod } from "../enums/paymentMethod";
 import { Role } from "src/modules/roles/persistance/entities/role.entity";
+import { Product } from '../../../products/persistance/entities/product.entity';
+import { Cart } from '../../../carts/entities/cart.entity';
 
 @Entity()
 export class User {
@@ -39,6 +41,9 @@ export class User {
         eager: true, // para que traiga las raza al hacer un findOne
       })
     role: Role;
+
+    @OneToMany(() => Cart, (cart) => cart.user)
+    carts: Cart[];
 
 
 }

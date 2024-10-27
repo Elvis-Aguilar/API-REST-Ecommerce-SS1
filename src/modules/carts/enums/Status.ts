@@ -1,0 +1,4 @@
+export enum StatusCart {
+  COMPLETED = 'COMPLETED',
+  CANCELLED_ERROR = 'CANCELLED_ERROR',
+}

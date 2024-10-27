@@ -17,7 +17,7 @@ export class RegisterDto {
     
     @Transform(({ value }) => value.trim())
     @IsString()
-    @MinLength(7)
+    @MinLength(4)
     @IsOptional()
     nit?: string;
 

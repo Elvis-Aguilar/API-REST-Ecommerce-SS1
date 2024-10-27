@@ -10,6 +10,9 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { ProductsModule } from './modules/products/products.module';
 import { CloudinaryModule } from './config/cloudinary/cloudinary.module';
+import { CartsModule } from './modules/carts/carts.module';
+import { CartItemsModule } from './modules/cart-items/cart-items.module';
+import { ServiceModule } from './webServices/service/service.module';
 
 @Module({
   imports: [
@@ -33,6 +36,9 @@ import { CloudinaryModule } from './config/cloudinary/cloudinary.module';
       synchronize: true,
     }),
     CloudinaryModule,
+    CartsModule,
+    CartItemsModule,
+    ServiceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

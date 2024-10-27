@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './persistance/entities/product.entity';
 import { CategoriesModule } from '../categories/categories.module';
 import { SuppliersModule } from '../suppliers/suppliers.module';
+import { PaymentMethod } from '../users/persistance/enums/paymentMethod';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Product]), CategoriesModule, SuppliersModule],
