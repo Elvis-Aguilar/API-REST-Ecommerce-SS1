@@ -22,6 +22,11 @@ export class CartsController {
     return this.cartsService.findOne(id);
   }
 
+  @Get('users/:id')
+  findAllByUserId(@Param('id') id: number) {
+    return this.cartsService.findAllUserById(id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
     return this.cartsService.update(+id, updateCartDto);

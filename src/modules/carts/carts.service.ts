@@ -74,6 +74,21 @@ export class CartsService {
     return cart;
   }
 
+  async findAllUserById(userId: number): Promise<Cart[]> {
+    const carts = await this.cartRepository
+      .createQueryBuilder('cart')
+      .leftJoinAndSelect('cart.cartItems', 'cartItem')
+      .leftJoinAndSelect('cartItem.product', 'product')
+      .where('cart.user = :userId', { userId })
+      .getMany();
+
+    if (!carts.length) {
+      throw new NotFoundException(`No carts found for user with ID ${userId}`);
+    }
+
+    return carts;
+  }
+
   findAll() {
     return `This action returns all carts`;
   }

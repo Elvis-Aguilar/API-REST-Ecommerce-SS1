@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  Put,
+} from '@nestjs/common';
 import { ProductsService } from '../domain/service/products.service';
 import { CreateProductDto } from '../domain/dto/create-product.dto';
 import { UpdateProductDto } from '../domain/dto/update-product.dto';
@@ -27,15 +39,27 @@ export class ProductsController {
     return this.productsService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @HttpCode(HttpStatus.OK)
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(+id, updateProductDto);
+  update(@Param('id') id: number, @Body() updateProductDto: UpdateProductDto) {
+    return this.productsService.update(id, updateProductDto);
+  }
+
+  @Get('category/:id')
+  @HttpCode(HttpStatus.OK)
+  findAllByCategory(@Param('id') id: number) {
+    return this.productsService.findAllByCategory(id);
+  }
+
+  @Get('supplier/:id')
+  @HttpCode(HttpStatus.OK)
+  findAllBySupplier(@Param('id') id: number) {
+    return this.productsService.findAllBySupplier(id);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  remove(@Param('id') id: string) {
-    return this.productsService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.productsService.remove(id);
   }
 }

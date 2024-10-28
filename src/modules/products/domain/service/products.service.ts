@@ -76,6 +76,24 @@ export class ProductsService {
     return true;
   }
 
+  async findAllByCategory(categoryId: number): Promise<Product[]> {
+    return await this.productRepository.find({
+      where: {
+        category: { id: categoryId },
+      },
+      relations: ['category'],
+    });
+  }
+
+  async findAllBySupplier(supplierId: number): Promise<Product[]> {
+    return await this.productRepository.find({
+      where: {
+        supplier: { id: supplierId },
+      },
+      relations: ['supplier'],
+    });
+  }
+
   async remove(id: number): Promise<void> {
 
     const product = await this.productRepository.findOneBy({ id });
