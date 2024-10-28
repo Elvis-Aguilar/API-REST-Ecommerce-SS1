@@ -11,7 +11,6 @@ import { Repository } from 'typeorm';
 import { RolesService } from 'src/modules/roles/domain/services/roles.service';
 import * as bcryptjs from 'bcryptjs';
 import { Role } from 'src/modules/roles/persistance/entities/role.entity';
-import axios from 'axios';
 import { ServiceService } from '../../../../webServices/service/service.service';
 
 @Injectable()

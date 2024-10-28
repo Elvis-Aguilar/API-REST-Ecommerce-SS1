@@ -13,6 +13,7 @@ import { CloudinaryModule } from './config/cloudinary/cloudinary.module';
 import { CartsModule } from './modules/carts/carts.module';
 import { CartItemsModule } from './modules/cart-items/cart-items.module';
 import { ServiceModule } from './webServices/service/service.module';
+import { ComanyModule } from './modules/comany/comany.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ServiceModule } from './webServices/service/service.module';
     CartsModule,
     CartItemsModule,
     ServiceModule,
+    ComanyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
