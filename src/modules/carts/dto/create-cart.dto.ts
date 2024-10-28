@@ -15,6 +15,6 @@ export class CreateCartDto {
   items:CreateItemCartDto [];
 
   @IsString()
-  password: string;
+  jwt: string;
 
 }

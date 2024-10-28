@@ -20,7 +20,7 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly roleService: RolesService,
-    private  readonly service: ServiceService,
+    private readonly service: ServiceService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {

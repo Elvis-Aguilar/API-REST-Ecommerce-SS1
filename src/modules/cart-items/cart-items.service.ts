@@ -17,12 +17,14 @@ export class CartItemsService {
     private readonly productsService: ProductsService
   ){}
 
-  async createAll(createCartItemDto: CreateItemCartDto[], cartEntity: Cart): Promise<void> {
+  async createAll(createCartItemDto: CreateItemCartDto[], cartEntity: Cart, disconut:boolean): Promise<void> {
     for (const itemDto of createCartItemDto) {
-      const isStockAvailable = await this.productsService.discountStock(itemDto.product_id, itemDto.quantity);
+      if (disconut){
+        const isStockAvailable = await this.productsService.discountStock(itemDto.product_id, itemDto.quantity);
 
-      if (!isStockAvailable) {
-        throw new ConflictException(`Stock insuficiente para el producto con ID: ${itemDto.product_id}`);
+        if (!isStockAvailable) {
+          throw new ConflictException(`Stock insuficiente para el producto con ID: ${itemDto.product_id}`);
+        }
       }
 
       const cartItem = this.cartItemRepository.create({

@@ -9,9 +9,11 @@ import { Cart } from './entities/cart.entity';
 import { ProductsModule } from '../products/products.module';
 import { ProductsService } from '../products/domain/service/products.service';
 import { CartItemsModule } from '../cart-items/cart-items.module';
+import { UsersModule } from '../users/users.module';
+import { ServiceModule } from '../../webServices/service/service.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Cart]), CartItemsModule],
+  imports: [TypeOrmModule.forFeature([Cart]), CartItemsModule, UsersModule, ServiceModule],
   controllers: [CartsController],
   providers: [CartsService],
 })
