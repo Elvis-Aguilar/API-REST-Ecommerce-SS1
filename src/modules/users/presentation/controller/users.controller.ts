@@ -21,6 +21,14 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('role/:id')
+  @HttpCode(HttpStatus.OK)
+  findAllByRoleId(@Param('id') id: number) {
+    return this.usersService.findAllByRole(id);
+  }
+
+
+
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   findOne(@Param('id') id: number) {
@@ -31,6 +39,12 @@ export class UsersController {
   @HttpCode(HttpStatus.ACCEPTED)
   update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
+  }
+
+  @Patch('user/:idUser/role/:id')
+  @HttpCode(HttpStatus.ACCEPTED)
+  updateRole(@Param('idUser') idUser: number, @Param('id') id: number) {
+    return this.usersService.changeRole(idUser, id);
   }
 
   @Delete(':id')

@@ -63,6 +63,28 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
+  async findAllByRole(roleId: number): Promise<User[]> {
+    const users = await this.userRepository.find({
+      where: { role: { id: roleId } },
+      relations: ['role'],
+    });
+    return users;
+  }
+  async changeRole(idUser: number, idRole: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: idUser }, relations: ['role'] });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${idUser} not found`);
+    }
+    const role = await this.roleService.findOne(idRole);
+    if (!role) {
+      throw new NotFoundException(`Role with ID ${idRole} not found`);
+    }
+    user.role = role;
+    await this.userRepository.save(user);
+
+    return user;
+  }
+
   async findOne(id: number) {
     return await this.userRepository.findOneBy({ id });
   }

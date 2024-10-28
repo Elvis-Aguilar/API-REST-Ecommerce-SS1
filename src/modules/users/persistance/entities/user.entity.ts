@@ -38,7 +38,7 @@ export class User {
     /** manejo de relaciones */
     @ManyToOne(() => Role, (role) => role.id, {
         // cascade: true,
-        eager: true, // para que traiga las raza al hacer un findOne
+        eager: true, //
       })
     role: Role;
 
