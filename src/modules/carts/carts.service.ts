@@ -15,20 +15,24 @@ import { UsersService } from '../users/domain/services/users.service';
 export class CartsService {
   constructor(
     @InjectRepository(Cart)
-    private readonly cartRepository : Repository<Cart>,
+    private readonly cartRepository: Repository<Cart>,
     private readonly cartItemService: CartItemsService,
-    private  readonly service: ServiceService,
-    private  readonly userService : UsersService
-  ){}
+    private readonly service: ServiceService,
+    private readonly userService: UsersService,
+  ) {}
 
   async create(createCartDto: CreateCartDto): Promise<Cart> {
     const paymentMethod = createCartDto.payment_method as PaymentMethod;
-    const userEntity = await  this.userService.findOne(createCartDto.user_id);
+    const userEntity = await this.userService.findOne(createCartDto.user_id);
 
-    const result = await this.service.validTransactionMoney(createCartDto.jwt, paymentMethod, userEntity.name, createCartDto.total )
+    const result = await this.service.validTransactionMoney(
+      createCartDto.jwt,
+      paymentMethod,
+      userEntity.name,
+      createCartDto.total,
+    );
 
-    if (result === 'OK'){
-
+    if (result === 'OK') {
       const cart = this.cartRepository.create({
         total: createCartDto.total,
         payment_method: paymentMethod,
@@ -38,22 +42,29 @@ export class CartsService {
 
       const savedCart = await this.cartRepository.save(cart);
 
-      await this.cartItemService.createAll(createCartDto.items, savedCart, true);
+      await this.cartItemService.createAll(
+        createCartDto.items,
+        savedCart,
+        true,
+      );
 
       return savedCart;
-    }else{
-
+    } else {
       const cart = this.cartRepository.create({
         total: createCartDto.total,
         payment_method: paymentMethod,
         status: StatusCart.CANCELLED_ERROR,
         user: { id: createCartDto.user_id } as User,
-        description_error: result
+        description_error: result,
       });
 
       const savedCart = await this.cartRepository.save(cart);
 
-      await this.cartItemService.createAll(createCartDto.items, savedCart, false);
+      await this.cartItemService.createAll(
+        createCartDto.items,
+        savedCart,
+        false,
+      );
 
       return savedCart;
     }
@@ -89,8 +100,13 @@ export class CartsService {
     return carts;
   }
 
-  findAll() {
-    return `This action returns all carts`;
+  async findAll() {
+    return await this.cartRepository
+      .createQueryBuilder('cart')
+      .leftJoinAndSelect('cart.cartItems', 'cartItem')
+      .leftJoinAndSelect('cartItem.product', 'product')
+      .leftJoinAndSelect('cart.user', 'user')
+      .getMany();
   }
 
   update(id: number, updateCartDto: UpdateCartDto) {
