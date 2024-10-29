@@ -9,7 +9,6 @@ export class ServiceService {
 
   async validUserExisParaseral(paymentho: PaymentMethod, email:string): Promise<boolean> {
     let paymentApiUrl = `${process.env.API_PASARELA_A}api/usuario/public/existeEmail/${email}`;
-
     if (paymentho === PaymentMethod.PAYMENT_GATEWAY_B) {
       paymentApiUrl = `${process.env.API_PASARELA_B}api/usuario/public/existeEmail/${email}`;
     }
@@ -74,7 +73,7 @@ export class ServiceService {
               respuesta = 'Solicitud incorrecta';
               break;
             case 404:
-              respuesta = 'Usuario receptor incorrecto';
+              respuesta = 'Usuario no encontrado en la pasarela de pagos';
               break;
             case 409:
               respuesta = 'Saldo insuficiente para la transacción';
