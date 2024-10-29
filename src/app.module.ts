@@ -14,6 +14,7 @@ import { CartsModule } from './modules/carts/carts.module';
 import { CartItemsModule } from './modules/cart-items/cart-items.module';
 import { ServiceModule } from './webServices/service/service.module';
 import { ComanyModule } from './modules/comany/comany.module';
+import { PostsModule } from './modules/posts/posts.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ComanyModule } from './modules/comany/comany.module';
     CartItemsModule,
     ServiceModule,
     ComanyModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

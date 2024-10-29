@@ -3,6 +3,7 @@ import { PaymentMethod } from "../enums/paymentMethod";
 import { Role } from "src/modules/roles/persistance/entities/role.entity";
 import { Product } from '../../../products/persistance/entities/product.entity';
 import { Cart } from '../../../carts/entities/cart.entity';
+import { Post } from '../../../posts/entities/post.entity';
 
 @Entity()
 export class User {
@@ -44,6 +45,9 @@ export class User {
 
     @OneToMany(() => Cart, (cart) => cart.user)
     carts: Cart[];
+
+    @OneToMany(() => Post, (post) => post.user)
+    posts: Post[];
 
 
 }
