@@ -1,8 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, HttpException, Injectable } from '@nestjs/common';
 import { PaymentMethod } from '../../modules/users/persistance/enums/paymentMethod';
 import axios from 'axios';
 import { TransactionRequestDto } from './dto/transaction-request.dto';
 import * as process from 'node:process';
+import { LoggerPayMethodDto } from '../../modules/carts/dto/logger-pay-method.dto';
 
 @Injectable()
 export class ServiceService {
@@ -18,7 +19,7 @@ export class ServiceService {
       try {
         const paymentApiResponse = await axios.get(paymentApiUrl);
 
-        const tieneCuenta = paymentApiResponse.data?.tieneCuenta;
+        const tieneCuenta = paymentApiResponse.data?.existe?.tieneCuenta;
 
         if (!tieneCuenta) {
           throw new ConflictException(
@@ -27,7 +28,7 @@ export class ServiceService {
         }
         return true
       } catch (error) {
-        throw new ConflictException(`Error al validar el usuario en la pasarela de pagos`);
+        throw new ConflictException(`El usuario no tiene una cuenta vigente en la pasarela de pagos`);
       }
     }
 
@@ -36,6 +37,32 @@ export class ServiceService {
       return true;
     }
     return false;
+  }
+
+  async loggerUser(logger:LoggerPayMethodDto, payMethod: PaymentMethod) {
+    let paymentApiUrl = `${process.env.API_PASARELA_A}api/usuario/public/login`;
+
+    if (payMethod === PaymentMethod.PAYMENT_GATEWAY_B) {
+      paymentApiUrl = `${process.env.API_PASARELA_B}api/usuario/public/login`;
+    }
+    try {
+      const response = await axios.post(paymentApiUrl, logger);
+
+      const jwt = response.data?.token;
+      if (jwt) {
+        return {
+          jwt: jwt
+        };
+      } else {
+        throw new HttpException('JWT no encontrado en la respuesta de la pasarela de pagos', 404);
+      }
+    } catch (error) {
+      if (error.response) {
+        throw new HttpException('Error al conectar con la pasarela de pagos', 404);
+      } else {
+        throw new HttpException('Error al conectar con la pasarela de pagos', 404);
+      }
+    }
   }
 
   async validTransactionMoney(jwt: string, paymentho: PaymentMethod, name:string,total: number): Promise<string> {

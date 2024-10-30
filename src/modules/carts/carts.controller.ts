@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { CartsService } from './carts.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
+import { LoggerPayMethodDto } from './dto/logger-pay-method.dto';
+import { PaymentMethod } from '../users/persistance/enums/paymentMethod';
 
 @Controller('carts')
 export class CartsController {
@@ -25,6 +27,12 @@ export class CartsController {
   @Get('users/:id')
   findAllByUserId(@Param('id') id: number) {
     return this.cartsService.findAllUserById(id);
+  }
+
+  @Post(':payMethod')
+  loggerUserPay(@Param('payMethod') payMethod: string, @Body() logger:LoggerPayMethodDto) {
+    const pay = payMethod as PaymentMethod
+    return this.cartsService.loggerUser(logger, pay)
   }
 
   @Patch(':id')

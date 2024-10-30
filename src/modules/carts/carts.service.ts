@@ -10,6 +10,8 @@ import { User } from '../users/persistance/entities/user.entity';
 import { PaymentMethod } from '../users/persistance/enums/paymentMethod';
 import { ServiceService } from '../../webServices/service/service.service';
 import { UsersService } from '../users/domain/services/users.service';
+import { LoggerPayMethodDto } from './dto/logger-pay-method.dto';
+import process from 'node:process';
 
 @Injectable()
 export class CartsService {
@@ -107,6 +109,10 @@ export class CartsService {
       .leftJoinAndSelect('cartItem.product', 'product')
       .leftJoinAndSelect('cart.user', 'user')
       .getMany();
+  }
+
+  async loggerUser(logger:LoggerPayMethodDto, payMethod: PaymentMethod) {
+    return this.service.loggerUser(logger, payMethod);
   }
 
   update(id: number, updateCartDto: UpdateCartDto) {
