@@ -23,54 +23,42 @@ export class CartsService {
     private readonly userService: UsersService,
   ) {}
 
-  async create(createCartDto: CreateCartDto): Promise<Cart> {
+  async create(createCartDto: CreateCartDto): Promise<{ cart: Cart, pdf?: Buffer }> {
     const paymentMethod = createCartDto.payment_method as PaymentMethod;
     const userEntity = await this.userService.findOne(createCartDto.user_id);
 
-    const result = await this.service.validTransactionMoney(
+    const { status, pdf } = await this.service.validTransactionMoney(
       createCartDto.jwt,
       paymentMethod,
       userEntity.name,
       createCartDto.total,
     );
 
-    if (result === 'OK') {
-      const cart = this.cartRepository.create({
+    let cart;
+    if (status === 'OK' && pdf) {
+      cart = this.cartRepository.create({
         total: createCartDto.total,
         payment_method: paymentMethod,
         status: StatusCart.COMPLETED,
         user: { id: createCartDto.user_id } as User,
       });
-
-      const savedCart = await this.cartRepository.save(cart);
-
-      await this.cartItemService.createAll(
-        createCartDto.items,
-        savedCart,
-        true,
-      );
-
-      return savedCart;
+      await this.cartRepository.save(cart);
+      await this.cartItemService.createAll(createCartDto.items, cart, true);
+      return { cart, pdf };
     } else {
-      const cart = this.cartRepository.create({
+      cart = this.cartRepository.create({
         total: createCartDto.total,
         payment_method: paymentMethod,
         status: StatusCart.CANCELLED_ERROR,
         user: { id: createCartDto.user_id } as User,
-        description_error: result,
+        description_error: status,
       });
-
-      const savedCart = await this.cartRepository.save(cart);
-
-      await this.cartItemService.createAll(
-        createCartDto.items,
-        savedCart,
-        false,
-      );
-
-      return savedCart;
+      await this.cartRepository.save(cart);
+      await this.cartItemService.createAll(createCartDto.items, cart, false);
+      return { cart };
     }
   }
+
 
   async findOne(id: number): Promise<Cart> {
     const cart = await this.cartRepository

@@ -64,18 +64,18 @@ export class ServiceService {
     }
   }
 
-  async validTransactionMoney(jwt: string, paymentho: PaymentMethod, name:string,total: number): Promise<string> {
+  async validTransactionMoney(jwt: string, paymentMethod: PaymentMethod, name: string, total: number): Promise<{ status: string, pdf?: Buffer }> {
     let respuesta = 'OK';
     let paymentApiUrl = `${process.env.API_PASARELA_A}api/transaccion/protected/pagarGetComprobante`;
 
-    if (paymentho === PaymentMethod.PAYMENT_GATEWAY_B) {
+    if (paymentMethod === PaymentMethod.PAYMENT_GATEWAY_B) {
       paymentApiUrl = `${process.env.API_PASARELA_B}api/transaccion/protected/pagarGetComprobante`;
     }
 
-    if (paymentho === PaymentMethod.PAYMENT_GATEWAY_A || paymentho === PaymentMethod.PAYMENT_GATEWAY_B) {
+    if (paymentMethod === PaymentMethod.PAYMENT_GATEWAY_A || paymentMethod === PaymentMethod.PAYMENT_GATEWAY_B) {
       try {
         const transaccionInfo: TransactionRequestDto = {
-          concepto: `compra del cliente: ${name}, con un Total gastado: ${total} la fecha: fecha de hoy`,
+          concepto: `Compra del cliente: ${name}, con un total gastado de ${total} el día de hoy`,
           identificadorTienda: 'a',
           nombreTienda: `${process.env.NAME_TIENDA}`,
           cantidad: Number(total),
@@ -83,17 +83,17 @@ export class ServiceService {
         };
 
         const paymentApiResponse = await axios.post(paymentApiUrl, transaccionInfo, {
+          responseType: 'arraybuffer',
           headers: {
             Authorization: `Bearer ${jwt}`,
           },
         });
 
-        if (paymentApiResponse.status === 200) {
-          return respuesta;
+        if (paymentApiResponse.status === 200 && paymentApiResponse.headers['content-type'] === 'application/pdf') {
+          return { status: respuesta, pdf: paymentApiResponse.data };
         }
       } catch (error) {
         if (error.response) {
-          // Manejo de respuestas específicas según el código de error de la API
           switch (error.response.status) {
             case 400:
               respuesta = 'Solicitud incorrecta';
@@ -107,16 +107,13 @@ export class ServiceService {
             default:
               respuesta = 'Error al realizar la transacción de dinero';
           }
-          return respuesta;
         } else {
-          return 'Error al realizar la transacción de dinero';
+          respuesta = 'Error al realizar la transacción de dinero';
         }
       }
-    } else {
-      // Lógica para otras pasarelas de pago (como PayPal) si es necesario
     }
 
-    return respuesta;
+    return { status: respuesta };
   }
 
 }

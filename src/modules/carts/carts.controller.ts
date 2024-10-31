@@ -13,19 +13,20 @@ export class CartsController {
 
   @Post()
   async create(@Body() createCartDto: CreateCartDto, @Res() res: Response) {
-    const result = await this.cartsService.create(createCartDto);
+    const { cart, pdf } = await this.cartsService.create(createCartDto);
 
-    if (result.status === 'COMPLETED' && result.pdf) {
-      // Si la transacción fue exitosa y hay un PDF, se envía en la respuesta.
+    if (pdf) {
       res.set({
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="comprobante.pdf"`,
       });
-      res.send(result.pdf);
+      res.send(pdf);
     } else {
-      res.json(result);
+      res.json(cart);
     }
   }
+
+
   @Get()
   findAll() {
     return this.cartsService.findAll();
