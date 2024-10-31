@@ -13,19 +13,23 @@ export class CartsController {
 
   @Post()
   async create(@Body() createCartDto: CreateCartDto, @Res() res: Response) {
-    const { cart, pdf } = await this.cartsService.create(createCartDto);
+    const { pdf } = await this.cartsService.create(createCartDto);
 
-    if (pdf) {
+    if (pdf && pdf.length > 0) {
       res.set({
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="comprobante.pdf"`,
+        'Content-Disposition': 'attachment; filename="comprobante.pdf"',
       });
       res.send(pdf);
     } else {
-      res.json(cart);
+      res.status(404).json({ message: 'No se pudo generar el PDF.' });
     }
   }
 
+  @Get('last/:id')
+  async findLastByIdUser(@Param('id') id: number) {
+    return this.cartsService.cartLastByIdUser(id)
+  }
 
   @Get()
   findAll() {
@@ -48,13 +52,4 @@ export class CartsController {
     return this.cartsService.loggerUser(logger, pay)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartsService.update(+id, updateCartDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartsService.remove(+id);
-  }
 }

@@ -23,7 +23,7 @@ export class CartsService {
     private readonly userService: UsersService,
   ) {}
 
-  async create(createCartDto: CreateCartDto): Promise<{ cart: Cart, pdf?: Buffer }> {
+  async create(createCartDto: CreateCartDto): Promise<{ pdf: Buffer | null }> {
     const paymentMethod = createCartDto.payment_method as PaymentMethod;
     const userEntity = await this.userService.findOne(createCartDto.user_id);
 
@@ -34,31 +34,35 @@ export class CartsService {
       createCartDto.total,
     );
 
-    let cart;
     if (status === 'OK' && pdf) {
-      cart = this.cartRepository.create({
-        total: createCartDto.total,
+      const cart = this.cartRepository.create({
+        total: Number(createCartDto.total),
         payment_method: paymentMethod,
         status: StatusCart.COMPLETED,
         user: { id: createCartDto.user_id } as User,
       });
-      await this.cartRepository.save(cart);
-      await this.cartItemService.createAll(createCartDto.items, cart, true);
-      return { cart, pdf };
+
+      const savedCart = await this.cartRepository.save(cart);
+
+      await this.cartItemService.createAll(
+        createCartDto.items,
+        savedCart,
+        true,
+      );
+      return {  pdf };
     } else {
-      cart = this.cartRepository.create({
+      const cart = this.cartRepository.create({
         total: createCartDto.total,
         payment_method: paymentMethod,
         status: StatusCart.CANCELLED_ERROR,
         user: { id: createCartDto.user_id } as User,
         description_error: status,
       });
-      await this.cartRepository.save(cart);
-      await this.cartItemService.createAll(createCartDto.items, cart, false);
-      return { cart };
+      const savedCart = await this.cartRepository.save(cart);
+      await this.cartItemService.createAll(createCartDto.items, savedCart, false);
+      return { pdf: null };
     }
   }
-
 
   async findOne(id: number): Promise<Cart> {
     const cart = await this.cartRepository
@@ -103,11 +107,11 @@ export class CartsService {
     return this.service.loggerUser(logger, payMethod);
   }
 
-  update(id: number, updateCartDto: UpdateCartDto) {
-    return `This action updates a #${id} cart`;
+  async cartLastByIdUser(idUser: number): Promise<Cart | null> {
+    return await this.cartRepository.findOne({
+      where: { user: { id: idUser } },
+      order: { created_at: 'DESC' },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cart`;
-  }
 }

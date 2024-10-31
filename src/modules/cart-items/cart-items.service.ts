@@ -28,8 +28,8 @@ export class CartItemsService {
       }
 
       const cartItem = this.cartItemRepository.create({
-        quantity: itemDto.quantity,
-        sub_total: itemDto.sub_total,
+        quantity: Number(itemDto.quantity),
+        sub_total: Number(itemDto.sub_total),
         cart: cartEntity,
         product: { id: itemDto.product_id } as Product,
       });

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { TransactionRequestDto } from './dto/transaction-request.dto';
 import * as process from 'node:process';
 import { LoggerPayMethodDto } from '../../modules/carts/dto/logger-pay-method.dto';
+import { format } from 'mysql2';
 
 @Injectable()
 export class ServiceService {
@@ -64,7 +65,7 @@ export class ServiceService {
     }
   }
 
-  async validTransactionMoney(jwt: string, paymentMethod: PaymentMethod, name: string, total: number): Promise<{ status: string, pdf?: Buffer }> {
+  async   validTransactionMoney(jwt: string, paymentMethod: PaymentMethod, name: string, total: number): Promise<{ status: string, pdf?: Buffer }> {
     let respuesta = 'OK';
     let paymentApiUrl = `${process.env.API_PASARELA_A}api/transaccion/protected/pagarGetComprobante`;
 
@@ -74,8 +75,12 @@ export class ServiceService {
 
     if (paymentMethod === PaymentMethod.PAYMENT_GATEWAY_A || paymentMethod === PaymentMethod.PAYMENT_GATEWAY_B) {
       try {
+        const currentDate = new Date();
+        const formattedDate = currentDate.toLocaleDateString();
+        const formattedTime = currentDate.toLocaleTimeString();
+
         const transaccionInfo: TransactionRequestDto = {
-          concepto: `Compra del cliente: ${name}, con un total gastado de ${total} el día de hoy`,
+          concepto: `Compra del cliente: ${name}, con un total gastado de Q${total} en la fecha: ${formattedDate} y hora: ${formattedTime}`,
           identificadorTienda: 'a',
           nombreTienda: `${process.env.NAME_TIENDA}`,
           cantidad: Number(total),
@@ -96,7 +101,7 @@ export class ServiceService {
         if (error.response) {
           switch (error.response.status) {
             case 400:
-              respuesta = 'Solicitud incorrecta';
+              respuesta = 'Ah ocurrido un error en la pasarela la  al intentar la transaccion';
               break;
             case 404:
               respuesta = 'Usuario no encontrado en la pasarela de pagos';
@@ -105,10 +110,10 @@ export class ServiceService {
               respuesta = 'Saldo insuficiente para la transacción';
               break;
             default:
-              respuesta = 'Error al realizar la transacción de dinero';
+              respuesta = 'Ah ocurrido un error en la pasarela la  al intentar la transaccion';
           }
         } else {
-          respuesta = 'Error al realizar la transacción de dinero';
+          respuesta = 'Ah ocurrido un error en la pasarela la  al intentar la transaccion';
         }
       }
     }
