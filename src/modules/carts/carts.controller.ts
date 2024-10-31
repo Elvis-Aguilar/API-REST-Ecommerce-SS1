@@ -1,19 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
 import { CartsService } from './carts.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { LoggerPayMethodDto } from './dto/logger-pay-method.dto';
 import { PaymentMethod } from '../users/persistance/enums/paymentMethod';
+import { Response } from 'express';
 
 @Controller('carts')
 export class CartsController {
   constructor(private readonly cartsService: CartsService) {}
 
-  @Post()
-  create(@Body() createCartDto: CreateCartDto) {
-    return this.cartsService.create(createCartDto);
-  }
 
+  @Post()
+  async create(@Body() createCartDto: CreateCartDto, @Res() res: Response) {
+    const result = await this.cartsService.create(createCartDto);
+
+    if (result.status === 'COMPLETED' && result.pdf) {
+      // Si la transacción fue exitosa y hay un PDF, se envía en la respuesta.
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="comprobante.pdf"`,
+      });
+      res.send(result.pdf);
+    } else {
+      res.json(result);
+    }
+  }
   @Get()
   findAll() {
     return this.cartsService.findAll();
