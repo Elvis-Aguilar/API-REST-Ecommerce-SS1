@@ -19,8 +19,7 @@ export class ServiceService {
       try {
         const paymentApiResponse = await axios.get(paymentApiUrl);
 
-        const tieneCuenta = paymentApiResponse.data?.existe?.tieneCuenta;
-
+        const tieneCuenta = paymentApiResponse.data?.tieneCuenta;
         if (!tieneCuenta) {
           throw new ConflictException(
             `El usuario no tiene una cuenta vigente en la pasarela de pagos`,
@@ -48,7 +47,7 @@ export class ServiceService {
     try {
       const response = await axios.post(paymentApiUrl, logger);
 
-      const jwt = response.data?.token;
+      const jwt = response.data?.jwt;
       if (jwt) {
         return {
           jwt: jwt
@@ -67,10 +66,10 @@ export class ServiceService {
 
   async validTransactionMoney(jwt: string, paymentho: PaymentMethod, name:string,total: number): Promise<string> {
     let respuesta = 'OK';
-    let paymentApiUrl = `${process.env.API_PASARELA_A}/api/transaccion/protected/pagarGetComprobante`;
+    let paymentApiUrl = `${process.env.API_PASARELA_A}api/transaccion/protected/pagarGetComprobante`;
 
     if (paymentho === PaymentMethod.PAYMENT_GATEWAY_B) {
-      paymentApiUrl = `${process.env.API_PASARELA_B}/api/transaccion/protected/pagarGetComprobante`;
+      paymentApiUrl = `${process.env.API_PASARELA_B}api/transaccion/protected/pagarGetComprobante`;
     }
 
     if (paymentho === PaymentMethod.PAYMENT_GATEWAY_A || paymentho === PaymentMethod.PAYMENT_GATEWAY_B) {
@@ -79,7 +78,7 @@ export class ServiceService {
           concepto: `compra del cliente: ${name}, con un Total gastado: ${total} la fecha: fecha de hoy`,
           identificadorTienda: 'a',
           nombreTienda: `${process.env.NAME_TIENDA}`,
-          cantidad: 1,
+          cantidad: Number(total),
           correoReceptor: `${process.env.EMAIL_TIENDA}`,
         };
 
